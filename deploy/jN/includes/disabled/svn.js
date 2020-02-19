@@ -29,6 +29,20 @@
 					svnObjects.runShell("TortoiseProc.exe /command:log /path:\""+svnObjects.getFile()+'\"');
 				}
 			}),
+			blame	: svnMenu.addItem({
+				text:"Blame",
+				cmd:function(){
+					var line = Editor.currentView.line + 1; // lines numbered from 0
+					svnObjects.runShell("TortoiseProc.exe /command:blame /line:"+line+" /path:\""+svnObjects.getFile()+'\"');
+				}
+			}),
+			diff	: svnMenu.addItem({
+				text:"Show changes",
+				cmd:function(){
+					var line = Editor.currentView.line + 1; // lines numbered from 0
+					svnObjects.runShell("TortoiseProc.exe /command:diff /line:"+line+" /path:\""+svnObjects.getFile()+'\"');
+				}
+			}),
 			sepNull:svnMenu.addSeparator(),
 			runShell:function(cmd){
 				var shell = new ActiveXObject("WScript.Shell");
@@ -76,9 +90,12 @@
 		
 				var svnItem = null;
 				
-				if (fso.FileExists(this.file) && fso.FolderExists(fso.GetParentFolderName(this.file)+"/.svn"))			
+				// TODO: fix this
+				// if (fso.FileExists(this.file) && fso.FolderExists(fso.GetParentFolderName(this.file)+"/.svn"))			
 					svnItem = svnObjects.svn(this.file);
 			
+				svnObjects.blame.disabled = !svnItem || !svnItem.IsSvnItem;
+				svnObjects.diff.disabled = !svnItem || !svnItem.IsSvnItem;
 				svnObjects.commit.disabled = !svnItem || !svnItem.IsSvnItem || !svnItem.HasModifications;
 				svnObjects.revert.disabled = !svnItem || !svnItem.IsSvnItem || !svnItem.HasModifications;
 				svnObjects.update.disabled = !svnItem || !svnItem.IsSvnItem;
